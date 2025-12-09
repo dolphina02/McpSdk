@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tool_policy", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tool_id"}))
+@Table(name = "tool_policy", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tool_id", "version"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,6 +22,9 @@ public class ToolPolicyEntity {
 
     @Column(nullable = false)
     private String toolId;
+
+    @Column(nullable = true)
+    private String version;
 
     @Column(nullable = false)
     private boolean allowed;

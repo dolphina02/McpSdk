@@ -16,8 +16,8 @@ public class SampleToolRegistry implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Register IFRS17 Loss Projection tool
-        String schemaJson = """
+        // Register IFRS17 Loss Projection tool - Version 1
+        String schemaV1 = """
                 {
                   "type": "object",
                   "required": ["portfolio_value", "loss_rate", "projection_years"],
@@ -29,19 +29,49 @@ public class SampleToolRegistry implements CommandLineRunner {
                 }
                 """;
 
-        JsonNode schema = objectMapper.readTree(schemaJson);
+        JsonNode schemaNodeV1 = objectMapper.readTree(schemaV1);
 
-        ToolRegistry tool = ToolRegistry.builder()
-                .toolId("ifrs17.loss_projection")
+        ToolRegistry toolV1 = ToolRegistry.builder()
+                .toolId("loss_projection")
                 .toolName("IFRS17 Loss Projection")
                 .version("1.0.0")
                 .status("ACTIVE")
-                .inputSchema(schema)
-                .description("Calculate IFRS17 loss projections for insurance portfolios")
+                .inputSchema(schemaNodeV1)
+                .description("Calculate IFRS17 loss projections for insurance portfolios (v1)")
                 .createdAt(System.currentTimeMillis())
                 .updatedAt(System.currentTimeMillis())
                 .build();
 
-        repository.save(tool);
+        repository.save(toolV1);
+
+        // Register IFRS17 Loss Projection tool - Version 2 (enhanced)
+        String schemaV2 = """
+                {
+                  "type": "object",
+                  "required": ["portfolio_value", "loss_rate", "projection_years", "confidence_level"],
+                  "properties": {
+                    "portfolio_value": {"type": "number"},
+                    "loss_rate": {"type": "number"},
+                    "projection_years": {"type": "integer"},
+                    "confidence_level": {"type": "number", "minimum": 0, "maximum": 1},
+                    "currency": {"type": "string", "default": "USD"}
+                  }
+                }
+                """;
+
+        JsonNode schemaNodeV2 = objectMapper.readTree(schemaV2);
+
+        ToolRegistry toolV2 = ToolRegistry.builder()
+                .toolId("loss_projection")
+                .toolName("IFRS17 Loss Projection")
+                .version("2.0.0")
+                .status("ACTIVE")
+                .inputSchema(schemaNodeV2)
+                .description("Calculate IFRS17 loss projections for insurance portfolios (v2 - enhanced with confidence levels)")
+                .createdAt(System.currentTimeMillis())
+                .updatedAt(System.currentTimeMillis())
+                .build();
+
+        repository.save(toolV2);
     }
 }

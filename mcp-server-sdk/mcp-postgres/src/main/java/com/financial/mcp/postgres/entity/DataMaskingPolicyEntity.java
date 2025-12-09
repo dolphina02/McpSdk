@@ -11,7 +11,7 @@ import org.hibernate.type.SqlTypes;
 import java.util.Map;
 
 @Entity
-@Table(name = "data_masking_policy", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tool_id"}))
+@Table(name = "data_masking_policy", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tool_id", "version"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,6 +26,9 @@ public class DataMaskingPolicyEntity {
 
     @Column(nullable = false)
     private String toolId;
+
+    @Column(nullable = true)
+    private String version;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")

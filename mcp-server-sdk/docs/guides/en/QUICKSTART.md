@@ -493,6 +493,264 @@ curl -X POST http://localhost:8080/mcp/rpc \
   }'
 ```
 
+## Testing Production Features
+
+### 1. Test Idempotency (Duplicate TX Detection)
+
+Idempotency prevents duplicate execution when requests are retried.
+
+```bash
+# Get token
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+# Generate a unique tx_id
+TX_ID=$(uuidgen)
+
+# First request - should succeed
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"api.ifrs17.loss_projection\",
+    \"params\": {
+      \"portfolio_value\": 1000000,
+      \"loss_rate\": 0.05,
+      \"projection_years\": 3
+    },
+    \"id\": \"req-1\",
+    \"meta\": {
+      \"user_id\": \"user@company.com\",
+      \"caller_id\": \"agent-001\",
+      \"trace_id\": \"trace-001\",
+      \"tx_id\": \"$TX_ID\",
+      \"dept\": \"RISK\"
+    }
+  }"
+
+# Second request with SAME tx_id - should return DUPLICATE_TX error
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"api.ifrs17.loss_projection\",
+    \"params\": {
+      \"portfolio_value\": 1000000,
+      \"loss_rate\": 0.05,
+      \"projection_years\": 3
+    },
+    \"id\": \"req-2\",
+    \"meta\": {
+      \"user_id\": \"user@company.com\",
+      \"caller_id\": \"agent-001\",
+      \"trace_id\": \"trace-001\",
+      \"tx_id\": \"$TX_ID\",
+      \"dept\": \"RISK\"
+    }
+  }"
+
+# Expected response for duplicate:
+# {
+#   "jsonrpc": "2.0",
+#   "error": {
+#     "code": "DUPLICATE_TX",
+#     "message": "Duplicate transaction detected",
+#     "retryable": false
+#   },
+#   "id": "req-2"
+# }
+```
+
+**Verification:**
+- First request returns success
+- Second request returns `DUPLICATE_TX` error
+- Error is non-retryable (client should not retry)
+
+### 2. Test Audit DLQ (Dead Letter Queue)
+
+Audit DLQ ensures zero audit loss if Elasticsearch is down.
+
+```bash
+# Stop Elasticsearch to simulate failure
+docker-compose stop elasticsearch
+
+# Make a request - should still succeed (audit goes to DLQ)
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "test-id",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-uuid",
+      "dept": "RISK"
+    }
+  }'
+
+# Check DLQ file was created
+ls -la /var/log/mcp/audit-dlq/
+
+# View DLQ file content
+cat /var/log/mcp/audit-dlq/audit-$(date +%Y%m%d).log
+
+# Restart Elasticsearch
+docker-compose start elasticsearch
+
+# Wait 60 seconds for scheduled resend
+sleep 60
+
+# Verify audit was sent to Elasticsearch
+curl http://localhost:9200/mcp-audit/_search | jq '.hits.hits[-1]'
+```
+
+**Verification:**
+- Request succeeds even with Elasticsearch down
+- DLQ file created at `/var/log/mcp/audit-dlq/audit-YYYYMMDD.log`
+- After Elasticsearch recovers, audit is automatically resent
+- Audit appears in Elasticsearch after resend
+
+### 3. Test Tool Versioning
+
+Tool versioning allows multiple versions to coexist safely.
+
+```bash
+# Get token
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+# Call version 1
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v1.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "v1-test",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v1",
+      "tx_id": "tx-v1-001",
+      "dept": "RISK"
+    }
+  }'
+
+# Call version 2 (with additional parameters)
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v2.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3,
+      "confidence_level": 0.95,
+      "currency": "USD"
+    },
+    "id": "v2-test",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v2",
+      "tx_id": "tx-v2-001",
+      "dept": "RISK"
+    }
+  }'
+
+# Disable version 1
+curl -X POST http://localhost:8080/admin/killswitch/disable \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_id": "ifrs17.loss_projection",
+    "version": "1.0.0",
+    "reason": "Deprecated - use v2"
+  }'
+
+# Try to call disabled version 1 - should fail
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v1.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "v1-disabled",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v1-disabled",
+      "tx_id": "tx-v1-disabled",
+      "dept": "RISK"
+    }
+  }'
+
+# Version 2 should still work
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v2.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3,
+      "confidence_level": 0.95,
+      "currency": "USD"
+    },
+    "id": "v2-still-works",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v2-works",
+      "tx_id": "tx-v2-works",
+      "dept": "RISK"
+    }
+  }'
+```
+
+**Verification:**
+- v1 and v2 both work initially
+- v1 can be disabled independently
+- v2 continues to work after v1 is disabled
+- Disabled v1 returns `TOOL_DISABLED` error
+
+### 4. Run Unit Tests
+
+```bash
+# Run all tests
+./gradlew test
+
+# Run specific feature tests
+./gradlew test --tests "*IdempotencyServiceTest"
+./gradlew test --tests "*AuditDlqServiceTest"
+./gradlew test --tests "*ToolRegistryServiceVersionTest"
+
+# Run with detailed output
+./gradlew test --info
+```
+
 ## Viewing Audit Logs
 
 ### Query Elasticsearch

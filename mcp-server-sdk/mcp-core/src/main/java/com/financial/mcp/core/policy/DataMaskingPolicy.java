@@ -14,6 +14,7 @@ import java.util.Map;
 public class DataMaskingPolicy {
     private String userId;
     private String toolId;
+    private String version; // Optional: for version-specific masking policies
     private Map<String, String> columnMasks; // column_name -> mask_type (HASH, REDACT, PARTIAL)
     private String dataLevel;
 }

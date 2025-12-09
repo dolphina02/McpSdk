@@ -17,6 +17,7 @@ import java.io.StringReader;
 public class ElasticsearchAuditRepository implements AuditRepository {
     private final ElasticsearchClient client;
     private final ObjectMapper objectMapper;
+    private final AuditDlqService auditDlqService;
     private static final String INDEX_NAME = "mcp-audit";
 
     @Override
@@ -29,8 +30,11 @@ public class ElasticsearchAuditRepository implements AuditRepository {
                     .withJson(new StringReader(logJson))
             );
             client.index(request);
+            log.debug("Audit log indexed to Elasticsearch: {}", auditLog.getTraceId());
         } catch (Exception e) {
-            log.error("Failed to index audit log to Elasticsearch", e);
+            log.warn("Failed to index audit log to Elasticsearch, writing to DLQ: {}", auditLog.getTraceId(), e);
+            // Fallback to DLQ
+            auditDlqService.writeToDlq(auditLog);
         }
     }
 }

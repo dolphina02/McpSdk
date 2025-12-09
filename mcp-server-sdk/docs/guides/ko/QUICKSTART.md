@@ -493,6 +493,264 @@ curl -X POST http://localhost:8080/mcp/rpc \
   }'
 ```
 
+## 프로덕션 기능 테스트
+
+### 1. 멱등성 테스트 (중복 TX 감지)
+
+멱등성은 요청이 재시도될 때 중복 실행을 방지합니다.
+
+```bash
+# 토큰 획득
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+# 고유한 tx_id 생성
+TX_ID=$(uuidgen)
+
+# 첫 번째 요청 - 성공해야 함
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"api.ifrs17.loss_projection\",
+    \"params\": {
+      \"portfolio_value\": 1000000,
+      \"loss_rate\": 0.05,
+      \"projection_years\": 3
+    },
+    \"id\": \"req-1\",
+    \"meta\": {
+      \"user_id\": \"user@company.com\",
+      \"caller_id\": \"agent-001\",
+      \"trace_id\": \"trace-001\",
+      \"tx_id\": \"$TX_ID\",
+      \"dept\": \"RISK\"
+    }
+  }"
+
+# 같은 tx_id로 두 번째 요청 - DUPLICATE_TX 에러 반환
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"api.ifrs17.loss_projection\",
+    \"params\": {
+      \"portfolio_value\": 1000000,
+      \"loss_rate\": 0.05,
+      \"projection_years\": 3
+    },
+    \"id\": \"req-2\",
+    \"meta\": {
+      \"user_id\": \"user@company.com\",
+      \"caller_id\": \"agent-001\",
+      \"trace_id\": \"trace-001\",
+      \"tx_id\": \"$TX_ID\",
+      \"dept\": \"RISK\"
+    }
+  }"
+
+# 중복 요청의 예상 응답:
+# {
+#   "jsonrpc": "2.0",
+#   "error": {
+#     "code": "DUPLICATE_TX",
+#     "message": "Duplicate transaction detected",
+#     "retryable": false
+#   },
+#   "id": "req-2"
+# }
+```
+
+**검증:**
+- 첫 번째 요청은 성공 반환
+- 두 번째 요청은 `DUPLICATE_TX` 에러 반환
+- 에러는 재시도 불가 (클라이언트는 재시도하면 안 됨)
+
+### 2. 감사 DLQ 테스트 (데드레터 큐)
+
+감사 DLQ는 Elasticsearch가 다운되어도 감사 손실 제로를 보장합니다.
+
+```bash
+# Elasticsearch 중지 (실패 시뮬레이션)
+docker-compose stop elasticsearch
+
+# 요청 실행 - 여전히 성공해야 함 (감사는 DLQ로 이동)
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "test-id",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-uuid",
+      "dept": "RISK"
+    }
+  }'
+
+# DLQ 파일 생성 확인
+ls -la /var/log/mcp/audit-dlq/
+
+# DLQ 파일 내용 확인
+cat /var/log/mcp/audit-dlq/audit-$(date +%Y%m%d).log
+
+# Elasticsearch 재시작
+docker-compose start elasticsearch
+
+# 60초 대기 (자동 재전송 대기)
+sleep 60
+
+# Elasticsearch에 감사가 전송되었는지 확인
+curl http://localhost:9200/mcp-audit/_search | jq '.hits.hits[-1]'
+```
+
+**검증:**
+- Elasticsearch가 다운되어도 요청 성공
+- DLQ 파일이 `/var/log/mcp/audit-dlq/audit-YYYYMMDD.log`에 생성됨
+- Elasticsearch 복구 후 감사가 자동으로 재전송됨
+- 재전송 후 감사가 Elasticsearch에 나타남
+
+### 3. 도구 버전 관리 테스트
+
+도구 버전 관리는 여러 버전이 안전하게 공존할 수 있게 합니다.
+
+```bash
+# 토큰 획득
+TOKEN=$(curl -s http://localhost:8080/dev/token | jq -r '.token')
+
+# 버전 1 호출
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v1.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "v1-test",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v1",
+      "tx_id": "tx-v1-001",
+      "dept": "RISK"
+    }
+  }'
+
+# 버전 2 호출 (추가 파라미터 포함)
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v2.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3,
+      "confidence_level": 0.95,
+      "currency": "USD"
+    },
+    "id": "v2-test",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v2",
+      "tx_id": "tx-v2-001",
+      "dept": "RISK"
+    }
+  }'
+
+# 버전 1 비활성화
+curl -X POST http://localhost:8080/admin/killswitch/disable \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_id": "ifrs17.loss_projection",
+    "version": "1.0.0",
+    "reason": "Deprecated - use v2"
+  }'
+
+# 비활성화된 버전 1 호출 시도 - 실패해야 함
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v1.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3
+    },
+    "id": "v1-disabled",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v1-disabled",
+      "tx_id": "tx-v1-disabled",
+      "dept": "RISK"
+    }
+  }'
+
+# 버전 2는 여전히 작동해야 함
+curl -X POST http://localhost:8080/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "api.ifrs17.v2.loss_projection",
+    "params": {
+      "portfolio_value": 1000000,
+      "loss_rate": 0.05,
+      "projection_years": 3,
+      "confidence_level": 0.95,
+      "currency": "USD"
+    },
+    "id": "v2-still-works",
+    "meta": {
+      "user_id": "user@company.com",
+      "caller_id": "agent-001",
+      "trace_id": "trace-v2-works",
+      "tx_id": "tx-v2-works",
+      "dept": "RISK"
+    }
+  }'
+```
+
+**검증:**
+- v1과 v2 모두 초기에 작동
+- v1을 독립적으로 비활성화 가능
+- v1 비활성화 후 v2는 계속 작동
+- 비활성화된 v1은 `TOOL_DISABLED` 에러 반환
+
+### 4. 단위 테스트 실행
+
+```bash
+# 모든 테스트 실행
+./gradlew test
+
+# 특정 기능 테스트만 실행
+./gradlew test --tests "*IdempotencyServiceTest"
+./gradlew test --tests "*AuditDlqServiceTest"
+./gradlew test --tests "*ToolRegistryServiceVersionTest"
+
+# 상세 출력으로 실행
+./gradlew test --info
+```
+
 ## 감사 로그 보기
 
 ### Elasticsearch 쿼리

@@ -21,6 +21,36 @@ public class KillSwitchService {
         }
     }
 
+    /**
+     * Validate tool with specific version is not disabled.
+     * Checks both tool-level and tool+version-level kill switches.
+     * 
+     * @param toolId Tool ID (without version)
+     * @param version Tool version
+     * @throws McpException if tool or version is disabled
+     */
+    public void validateToolNotDisabledByVersion(String toolId, String version) {
+        // Check tool-level disable
+        KillSwitchStatus toolStatus = repository.getToolStatus(toolId);
+        if (toolStatus != null && toolStatus.isDisabled()) {
+            throw new McpException(
+                    McpErrorCode.TOOL_DISABLED,
+                    "Tool is disabled by kill switch: " + toolId,
+                    false
+            );
+        }
+
+        // Check tool+version-level disable
+        KillSwitchStatus versionStatus = repository.getToolVersionStatus(toolId, version);
+        if (versionStatus != null && versionStatus.isDisabled()) {
+            throw new McpException(
+                    McpErrorCode.TOOL_DISABLED,
+                    "Tool version is disabled by kill switch: " + toolId + " version: " + version,
+                    false
+            );
+        }
+    }
+
     public void validateGlobalNotDisabled() {
         KillSwitchStatus status = repository.getGlobalStatus();
         if (status != null && status.isDisabled()) {
@@ -36,8 +66,29 @@ public class KillSwitchService {
         repository.setToolStatus(toolId, true, reason);
     }
 
+    /**
+     * Disable specific tool version.
+     * 
+     * @param toolId Tool ID (without version)
+     * @param version Tool version
+     * @param reason Reason for disabling
+     */
+    public void disableToolVersion(String toolId, String version, String reason) {
+        repository.setToolVersionStatus(toolId, version, true, reason);
+    }
+
     public void enableTool(String toolId) {
         repository.setToolStatus(toolId, false, null);
+    }
+
+    /**
+     * Enable specific tool version.
+     * 
+     * @param toolId Tool ID (without version)
+     * @param version Tool version
+     */
+    public void enableToolVersion(String toolId, String version) {
+        repository.setToolVersionStatus(toolId, version, false, null);
     }
 
     public void disableGlobal(String reason) {
@@ -50,6 +101,17 @@ public class KillSwitchService {
 
     public KillSwitchStatus getToolStatus(String toolId) {
         return repository.getToolStatus(toolId);
+    }
+
+    /**
+     * Get kill switch status for tool version.
+     * 
+     * @param toolId Tool ID (without version)
+     * @param version Tool version
+     * @return KillSwitchStatus or null if not found
+     */
+    public KillSwitchStatus getToolVersionStatus(String toolId, String version) {
+        return repository.getToolVersionStatus(toolId, version);
     }
 
     public KillSwitchStatus getGlobalStatus() {

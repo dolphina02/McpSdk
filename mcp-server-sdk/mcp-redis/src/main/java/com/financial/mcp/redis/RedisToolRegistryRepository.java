@@ -37,6 +37,24 @@ public class RedisToolRegistryRepository implements ToolRegistryRepository {
     }
 
     @Override
+    public ToolRegistry findByToolIdAndVersion(String toolId, String version) {
+        String cacheKey = CACHE_KEY_PREFIX + toolId + ":" + version;
+        
+        // Try Redis first
+        Object cached = redisTemplate.opsForValue().get(cacheKey);
+        if (cached != null) {
+            return objectMapper.convertValue(cached, ToolRegistry.class);
+        }
+
+        // Fallback to database
+        ToolRegistry tool = fallbackRepository.findByToolIdAndVersion(toolId, version);
+        if (tool != null) {
+            redisTemplate.opsForValue().set(cacheKey, tool, CACHE_TTL_MINUTES, TimeUnit.MINUTES);
+        }
+        return tool;
+    }
+
+    @Override
     public void save(ToolRegistry tool) {
         fallbackRepository.save(tool);
         String cacheKey = CACHE_KEY_PREFIX + tool.getToolId();

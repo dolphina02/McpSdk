@@ -13,11 +13,22 @@ public class RedisKillSwitchRepository implements KillSwitchRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private static final String TOOL_STATUS_PREFIX = "kill_switch:tool:";
+    private static final String TOOL_VERSION_STATUS_PREFIX = "kill_switch:tool_version:";
     private static final String GLOBAL_STATUS_KEY = "kill_switch:global";
 
     @Override
     public KillSwitchStatus getToolStatus(String toolId) {
         String key = TOOL_STATUS_PREFIX + toolId;
+        Object cached = redisTemplate.opsForValue().get(key);
+        if (cached != null) {
+            return objectMapper.convertValue(cached, KillSwitchStatus.class);
+        }
+        return null;
+    }
+
+    @Override
+    public KillSwitchStatus getToolVersionStatus(String toolId, String version) {
+        String key = TOOL_VERSION_STATUS_PREFIX + toolId + ":" + version;
         Object cached = redisTemplate.opsForValue().get(key);
         if (cached != null) {
             return objectMapper.convertValue(cached, KillSwitchStatus.class);
@@ -39,6 +50,18 @@ public class RedisKillSwitchRepository implements KillSwitchRepository {
         String key = TOOL_STATUS_PREFIX + toolId;
         KillSwitchStatus status = KillSwitchStatus.builder()
                 .targetId(toolId)
+                .disabled(disabled)
+                .reason(reason)
+                .disabledAt(System.currentTimeMillis())
+                .build();
+        redisTemplate.opsForValue().set(key, status);
+    }
+
+    @Override
+    public void setToolVersionStatus(String toolId, String version, boolean disabled, String reason) {
+        String key = TOOL_VERSION_STATUS_PREFIX + toolId + ":" + version;
+        KillSwitchStatus status = KillSwitchStatus.builder()
+                .targetId(toolId + ":" + version)
                 .disabled(disabled)
                 .reason(reason)
                 .disabledAt(System.currentTimeMillis())

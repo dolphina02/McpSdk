@@ -24,8 +24,26 @@ public class PostgresPolicyRepository implements PolicyRepository {
     }
 
     @Override
+    public ToolPolicy findPolicyByUserToolAndVersion(String userId, String toolId, String version) {
+        ToolPolicyEntity entity = policyJpaRepository.findByUserIdAndToolIdAndVersion(userId, toolId, version);
+        if (entity == null) {
+            return null;
+        }
+        return mapToPolicy(entity);
+    }
+
+    @Override
     public DataMaskingPolicy findMaskingPolicy(String userId, String toolId) {
         DataMaskingPolicyEntity entity = maskingJpaRepository.findByUserIdAndToolId(userId, toolId);
+        if (entity == null) {
+            return null;
+        }
+        return mapToMaskingPolicy(entity);
+    }
+
+    @Override
+    public DataMaskingPolicy findMaskingPolicyByVersion(String userId, String toolId, String version) {
+        DataMaskingPolicyEntity entity = maskingJpaRepository.findByUserIdAndToolIdAndVersion(userId, toolId, version);
         if (entity == null) {
             return null;
         }
@@ -37,6 +55,7 @@ public class PostgresPolicyRepository implements PolicyRepository {
         ToolPolicyEntity entity = ToolPolicyEntity.builder()
                 .userId(policy.getUserId())
                 .toolId(policy.getToolId())
+                .version(policy.getVersion())
                 .allowed(policy.isAllowed())
                 .dataLevel(policy.getDataLevel())
                 .createdAt(policy.getCreatedAt())
@@ -50,6 +69,7 @@ public class PostgresPolicyRepository implements PolicyRepository {
         DataMaskingPolicyEntity entity = DataMaskingPolicyEntity.builder()
                 .userId(policy.getUserId())
                 .toolId(policy.getToolId())
+                .version(policy.getVersion())
                 .columnMasks(policy.getColumnMasks())
                 .dataLevel(policy.getDataLevel())
                 .createdAt(System.currentTimeMillis())
@@ -62,6 +82,7 @@ public class PostgresPolicyRepository implements PolicyRepository {
         return ToolPolicy.builder()
                 .userId(entity.getUserId())
                 .toolId(entity.getToolId())
+                .version(entity.getVersion())
                 .allowed(entity.isAllowed())
                 .dataLevel(entity.getDataLevel())
                 .createdAt(entity.getCreatedAt())
@@ -73,6 +94,7 @@ public class PostgresPolicyRepository implements PolicyRepository {
         return DataMaskingPolicy.builder()
                 .userId(entity.getUserId())
                 .toolId(entity.getToolId())
+                .version(entity.getVersion())
                 .columnMasks(entity.getColumnMasks())
                 .dataLevel(entity.getDataLevel())
                 .build();

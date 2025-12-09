@@ -3,6 +3,8 @@ package com.financial.mcp.autoconfigure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.financial.mcp.core.audit.AuditRepository;
 import com.financial.mcp.core.audit.AuditService;
+import com.financial.mcp.core.idempotency.IdempotencyRepository;
+import com.financial.mcp.core.idempotency.IdempotencyService;
 import com.financial.mcp.core.killswitch.KillSwitchRepository;
 import com.financial.mcp.core.killswitch.KillSwitchService;
 import com.financial.mcp.core.masking.DataMaskingService;
@@ -66,6 +68,12 @@ public class McpServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public IdempotencyService idempotencyService(IdempotencyRepository repository) {
+        return new IdempotencyService(repository);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public JsonRpcDispatcher jsonRpcDispatcher(
             ToolRegistryService toolRegistryService,
             PolicyService policyService,
@@ -73,6 +81,7 @@ public class McpServerAutoConfiguration {
             JsonSchemaValidator schemaValidator,
             DataMaskingService maskingService,
             AuditService auditService,
+            IdempotencyService idempotencyService,
             ObjectMapper objectMapper,
             JsonRpcHandler handler) {
         return new JsonRpcDispatcher(
@@ -82,6 +91,7 @@ public class McpServerAutoConfiguration {
                 schemaValidator,
                 maskingService,
                 auditService,
+                idempotencyService,
                 objectMapper,
                 handler
         );

@@ -20,6 +20,9 @@ public class McpMeta {
     @JsonProperty("trace_id")
     private String traceId;
 
+    @JsonProperty("tx_id")
+    private String txId;
+
     @JsonProperty("dept")
     private String dept;
 
@@ -32,6 +35,9 @@ public class McpMeta {
         }
         if (traceId == null || traceId.isBlank()) {
             throw new IllegalArgumentException("meta.trace_id is required");
+        }
+        if (txId == null || txId.isBlank()) {
+            throw new IllegalArgumentException("meta.tx_id is required");
         }
         if (dept == null || dept.isBlank()) {
             throw new IllegalArgumentException("meta.dept is required");

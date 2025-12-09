@@ -21,6 +21,15 @@ public class PostgresToolRegistryRepository implements ToolRegistryRepository {
     }
 
     @Override
+    public ToolRegistry findByToolIdAndVersion(String toolId, String version) {
+        ToolRegistryEntity entity = jpaRepository.findByToolIdAndVersion(toolId, version);
+        if (entity == null) {
+            return null;
+        }
+        return mapToRegistry(entity);
+    }
+
+    @Override
     public void save(ToolRegistry tool) {
         ToolRegistryEntity entity = ToolRegistryEntity.builder()
                 .toolId(tool.getToolId())

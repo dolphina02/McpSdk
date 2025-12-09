@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ToolPolicy {
     private String userId;
     private String toolId;
+    private String version; // Optional: for version-specific policies
     private boolean allowed;
     private String dataLevel; // PUBLIC, INTERNAL, CONFIDENTIAL
     private long createdAt;
