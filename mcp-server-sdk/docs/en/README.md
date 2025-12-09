@@ -2,6 +2,43 @@
 
 A production-grade, financial-grade Model Context Protocol (MCP) Spoke Server SDK built with Spring Boot 3.x. This SDK provides a complete framework for building secure, auditable, and scalable MCP servers with dual JSON-RPC 2.0 and REST interfaces.
 
+## What is This SDK?
+
+### Purpose
+This is a **Spring Boot Starter library** for building **MCP Spoke Servers** - the server-side component that exposes tools/capabilities to LLM agents and AI systems via the Model Context Protocol.
+
+### MCP Layer
+This SDK implements the **MCP Server (Spoke) Layer**:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  LLM / AI Agent / Client Application                    │
+└────────────────────┬────────────────────────────────────┘
+                     │ (JSON-RPC 2.0 or REST)
+                     │
+        ┌────────────▼────────────┐
+        │  MCP Spoke Server       │  ◄── THIS SDK
+        │  (Your Implementation)  │
+        └────────────┬────────────┘
+                     │
+        ┌────────────▼────────────┐
+        │  Your Business Logic    │
+        │  (Tools/Capabilities)   │
+        └─────────────────────────┘
+```
+
+### What You Build With This SDK
+- **MCP Spoke Servers**: Standalone servers that expose tools to LLM agents
+- **Tool Implementations**: Custom business logic wrapped as MCP tools
+- **Secure APIs**: With OAuth2, RBAC, ABAC, and audit logging
+- **Production-Ready**: With caching, kill switches, and monitoring
+
+### Key Characteristics
+- **Spoke-Only**: No hub component (hub is managed separately)
+- **Dual Interface**: JSON-RPC 2.0 (native MCP) + REST (for API gateways)
+- **Single Core**: All business logic in JSON-RPC dispatcher (no duplication)
+- **Financial-Grade**: Security, audit, compliance built-in
+
 ## Architecture Overview
 
 ### Core Design Principles
