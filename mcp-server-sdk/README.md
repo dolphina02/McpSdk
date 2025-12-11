@@ -46,42 +46,42 @@ Complete documentation for the MCP Spoke Server SDK in English and Korean.
 ## 📚 Documentation
 
 ### Core Documentation
-- **[README](docs/en/README.md)** - Complete reference guide (1000+ lines)
-- **[INDEX](docs/en/INDEX.md)** - Complete index and navigation guide
-- **[PROJECT_SUMMARY](docs/en/PROJECT_SUMMARY.md)** - Overview of what was generated
-- **[ARCHITECTURE](docs/en/ARCHITECTURE.md)** - Deep dive into system design
-- **[DELIVERY_CHECKLIST](docs/en/DELIVERY_CHECKLIST.md)** - Verification of all features
-- **[FEATURES.md](FEATURES.md)** - Production-critical features (idempotency, audit DLQ, tool versioning)
+- **[README](mcp-server-sdk/docs/en/README.md)** - Complete reference guide (1000+ lines)
+- **[INDEX](mcp-server-sdk/docs/en/INDEX.md)** - Complete index and navigation guide
+- **[PROJECT_SUMMARY](mcp-server-sdk/docs/en/PROJECT_SUMMARY.md)** - Overview of what was generated
+- **[ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md)** - Deep dive into system design
+- **[DELIVERY_CHECKLIST](mcp-server-sdk/docs/en/DELIVERY_CHECKLIST.md)** - Verification of all features
+- **[FEATURES.md](mcp-server-sdk/FEATURES.md)** - Complete feature documentation
 
 ### Guides
-- **[QUICKSTART](docs/guides/en/QUICKSTART.md)** - Local development setup
-- **[DEV_SETUP](docs/guides/en/DEV_SETUP.md)** - Development environment configuration
-- **[BUILD_CHECK](docs/guides/en/BUILD_CHECK.md)** - Build environment verification
-- **[BUILD_ENVIRONMENT_SUMMARY](docs/guides/en/BUILD_ENVIRONMENT_SUMMARY.md)** - Build environment summary
+- **[QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)** - Local development setup
+- **[DEV_SETUP](mcp-server-sdk/docs/guides/en/DEV_SETUP.md)** - Development environment configuration
+- **[BUILD_CHECK](mcp-server-sdk/docs/guides/en/BUILD_CHECK.md)** - Build environment verification
+- **[BUILD_ENVIRONMENT_SUMMARY](mcp-server-sdk/docs/guides/en/BUILD_ENVIRONMENT_SUMMARY.md)** - Build environment summary
 
 ## 🎯 Quick Navigation
 
 ### For Architects
-1. Start with [PROJECT_SUMMARY](docs/en/PROJECT_SUMMARY.md)
-2. Read [ARCHITECTURE](docs/en/ARCHITECTURE.md) for deep dive
-3. Review [README](docs/en/README.md) for complete reference
+1. Start with [PROJECT_SUMMARY](mcp-server-sdk/docs/en/PROJECT_SUMMARY.md)
+2. Read [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for deep dive
+3. Review [README](mcp-server-sdk/docs/en/README.md) for complete reference
 
 ### For Developers
-1. Start with [QUICKSTART](docs/guides/en/QUICKSTART.md)
+1. Start with [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)
 2. Review sample-spoke-app for examples
-3. Read [README](docs/en/README.md) for API reference
-4. Check [ARCHITECTURE](docs/en/ARCHITECTURE.md) for details
+3. Read [README](mcp-server-sdk/docs/en/README.md) for API reference
+4. Check [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for details
 
 ### For DevOps
-1. Read [QUICKSTART](docs/guides/en/QUICKSTART.md) for local setup
+1. Read [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md) for local setup
 2. Review application-prod.yml for production config
-3. Check [README](docs/en/README.md) for deployment section
-4. Review [ARCHITECTURE](docs/en/ARCHITECTURE.md) for topology
+3. Check [README](mcp-server-sdk/docs/en/README.md) for deployment section
+4. Review [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for topology
 
 ### For Security
-1. Read [README](docs/en/README.md) Security Model section
-2. Review [ARCHITECTURE](docs/en/ARCHITECTURE.md) Security Layers section
-3. Check [QUICKSTART](docs/guides/en/QUICKSTART.md) for testing authorization
+1. Read [README](mcp-server-sdk/docs/en/README.md) Security Model section
+2. Review [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) Security Layers section
+3. Check [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md) for testing authorization
 
 ## 📋 Documentation Structure
 
@@ -115,23 +115,16 @@ docs/
 
 ## 🔑 Key Features
 
-✅ **Spoke-Only MCP**: No hub dependency
-✅ **Dual Interface**: JSON-RPC 2.0 + REST
-✅ **Single Logic Core**: No duplication
-✅ **Financial-Grade Security**: OAuth2, RBAC, ABAC, masking
-✅ **Audit Compliance**: Server-side logging, Elasticsearch
-✅ **Kill Switch**: Tool-level & global disable
-✅ **Caching**: Redis with PostgreSQL fallback
-✅ **Async Logging**: Non-blocking audit trail
-✅ **Error Handling**: Standard error codes
-✅ **Validation**: JSON Schema + meta validation
-✅ **Data Protection**: Column-level masking
-✅ **Trace Correlation**: Distributed tracing support
-✅ **Production Ready**: Monitoring, metrics, health checks
+See [FEATURES.md](FEATURES.md) for complete feature documentation.
+
+**Security**: OAuth2/JWT, RBAC/ABAC, Data Masking
+**Reliability**: Idempotency, Kill Switches, Tool Versioning
+**Observability**: Audit Logging, Trace Correlation, Health Checks
+**Performance**: Caching (Redis + PostgreSQL), JSON Schema Validation, Error Handling
 
 ## 🚀 Getting Started
 
-1. Read [QUICKSTART](docs/guides/en/QUICKSTART.md)
+1. Read [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)
 2. Follow the setup steps
 3. Test the API
 4. Implement your tools

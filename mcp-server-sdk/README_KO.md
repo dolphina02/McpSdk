@@ -46,42 +46,42 @@ MCP Spoke Server SDK의 완전한 문서 (영문 및 한글).
 ## 📚 문서
 
 ### 핵심 문서
-- **[README](docs/ko/README.md)** - 완전한 참고 가이드 (1000+ 줄)
-- **[INDEX](docs/ko/INDEX.md)** - 완전한 인덱스 및 네비게이션 가이드
-- **[PROJECT_SUMMARY](docs/ko/PROJECT_SUMMARY.md)** - 생성된 내용 개요
-- **[ARCHITECTURE](docs/ko/ARCHITECTURE.md)** - 시스템 설계 심화
-- **[DELIVERY_CHECKLIST](docs/ko/DELIVERY_CHECKLIST.md)** - 모든 기능 검증
-- **[FEATURES.md](FEATURES.md)** - 프로덕션 필수 기능 (멱등성, 감사 DLQ, 도구 버전 관리)
+- **[README](mcp-server-sdk/docs/ko/README.md)** - 완전한 참고 가이드 (1000+ 줄)
+- **[INDEX](mcp-server-sdk/docs/ko/INDEX.md)** - 완전한 인덱스 및 네비게이션 가이드
+- **[PROJECT_SUMMARY](mcp-server-sdk/docs/ko/PROJECT_SUMMARY.md)** - 생성된 내용 개요
+- **[ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md)** - 시스템 설계 심화
+- **[DELIVERY_CHECKLIST](mcp-server-sdk/docs/ko/DELIVERY_CHECKLIST.md)** - 모든 기능 검증
+- **[FEATURES.md](mcp-server-sdk/FEATURES.md)** - 완전한 기능 문서
 
 ### 가이드
-- **[QUICKSTART](docs/guides/ko/QUICKSTART.md)** - 로컬 개발 환경 설정
-- **[DEV_SETUP](docs/guides/ko/DEV_SETUP.md)** - 개발 환경 설정
-- **[BUILD_CHECK](docs/guides/ko/BUILD_CHECK.md)** - 빌드 환경 확인
-- **[BUILD_ENVIRONMENT_SUMMARY](docs/guides/ko/BUILD_ENVIRONMENT_SUMMARY.md)** - 빌드 환경 요약
+- **[QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md)** - 로컬 개발 환경 설정
+- **[DEV_SETUP](mcp-server-sdk/docs/guides/ko/DEV_SETUP.md)** - 개발 환경 설정
+- **[BUILD_CHECK](mcp-server-sdk/docs/guides/ko/BUILD_CHECK.md)** - 빌드 환경 확인
+- **[BUILD_ENVIRONMENT_SUMMARY](mcp-server-sdk/docs/guides/ko/BUILD_ENVIRONMENT_SUMMARY.md)** - 빌드 환경 요약
 
 ## 🎯 빠른 네비게이션
 
 ### 아키텍트용
-1. [PROJECT_SUMMARY](docs/ko/PROJECT_SUMMARY.md)부터 시작
-2. [ARCHITECTURE](docs/ko/ARCHITECTURE.md) 읽기
-3. [README](docs/ko/README.md) 참고
+1. [PROJECT_SUMMARY](mcp-server-sdk/docs/ko/PROJECT_SUMMARY.md)부터 시작
+2. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 읽기
+3. [README](mcp-server-sdk/docs/ko/README.md) 참고
 
 ### 개발자용
-1. [QUICKSTART](docs/guides/ko/QUICKSTART.md)부터 시작
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md)부터 시작
 2. sample-spoke-app 예제 검토
-3. [README](docs/ko/README.md) API 참고
-4. [ARCHITECTURE](docs/ko/ARCHITECTURE.md) 상세 확인
+3. [README](mcp-server-sdk/docs/ko/README.md) API 참고
+4. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 상세 확인
 
 ### DevOps용
-1. [QUICKSTART](docs/guides/ko/QUICKSTART.md) 로컬 설정
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 로컬 설정
 2. application-prod.yml 프로덕션 설정 검토
-3. [README](docs/ko/README.md) 배포 섹션
-4. [ARCHITECTURE](docs/ko/ARCHITECTURE.md) 토폴로지 검토
+3. [README](mcp-server-sdk/docs/ko/README.md) 배포 섹션
+4. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 토폴로지 검토
 
 ### 보안 담당자용
-1. [README](docs/ko/README.md) 보안 모델 섹션
-2. [ARCHITECTURE](docs/ko/ARCHITECTURE.md) 보안 레이어 섹션
-3. [QUICKSTART](docs/guides/ko/QUICKSTART.md) 권한 테스트
+1. [README](mcp-server-sdk/docs/ko/README.md) 보안 모델 섹션
+2. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 보안 레이어 섹션
+3. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 권한 테스트
 
 ## 📋 문서 구조
 
@@ -115,23 +115,16 @@ docs/
 
 ## 🔑 주요 기능
 
-✅ **Spoke 전용 MCP**: 허브 의존성 없음
-✅ **이중 인터페이스**: JSON-RPC 2.0 + REST
-✅ **단일 로직 코어**: 중복 없음
-✅ **금융 등급 보안**: OAuth2, RBAC, ABAC, 마스킹
-✅ **감사 준수**: 서버 측 로깅, Elasticsearch
-✅ **킬 스위치**: 도구 수준 및 글로벌 비활성화
-✅ **캐싱**: Redis + PostgreSQL 폴백
-✅ **비동기 로깅**: 논블로킹 감사 추적
-✅ **오류 처리**: 표준 오류 코드
-✅ **검증**: JSON 스키마 + 메타 검증
-✅ **데이터 보호**: 열 수준 마스킹
-✅ **추적 상관관계**: 분산 추적 지원
-✅ **프로덕션 준비**: 모니터링, 메트릭, 상태 확인
+[FEATURES.md](FEATURES.md)에서 완전한 기능 문서를 참고하세요.
+
+**보안**: OAuth2/JWT, RBAC/ABAC, 데이터 마스킹
+**신뢰성**: 멱등성, 킬 스위치, 도구 버전 관리
+**관찰성**: 감사 로깅, 추적 상관관계, 상태 확인
+**성능**: 캐싱 (Redis + PostgreSQL), JSON 스키마 검증, 오류 처리
 
 ## 🚀 시작하기
 
-1. [QUICKSTART](docs/guides/ko/QUICKSTART.md) 읽기
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 읽기
 2. 설정 단계 따라하기
 3. API 테스트
 4. 도구 구현

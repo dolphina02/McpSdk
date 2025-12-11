@@ -85,82 +85,84 @@ Complete documentation for the MCP Spoke Server SDK in English and Korean.
 ## 📚 English Documentation {#english-documentation}
 
 ### Core Documentation
-- **[README](en/README.md)** - Complete reference guide (1000+ lines)
-- **[INDEX](en/INDEX.md)** - Complete index and navigation guide
-- **[PROJECT_SUMMARY](en/PROJECT_SUMMARY.md)** - Overview of what was generated
-- **[ARCHITECTURE](en/ARCHITECTURE.md)** - Deep dive into system design
-- **[DELIVERY_CHECKLIST](en/DELIVERY_CHECKLIST.md)** - Verification of all features
+- **[README](mcp-server-sdk/docs/en/README.md)** - Complete reference guide (1000+ lines)
+- **[INDEX](mcp-server-sdk/docs/en/INDEX.md)** - Complete index and navigation guide
+- **[PROJECT_SUMMARY](mcp-server-sdk/docs/en/PROJECT_SUMMARY.md)** - Overview of what was generated
+- **[ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md)** - Deep dive into system design
+- **[DELIVERY_CHECKLIST](mcp-server-sdk/docs/en/DELIVERY_CHECKLIST.md)** - Verification of all features
+- **[FEATURES](mcp-server-sdk/FEATURES.md)** - Complete feature documentation
 
 ### Guides
-- **[QUICKSTART](guides/en/QUICKSTART.md)** - Local development setup
-- **[DEV_SETUP](guides/en/DEV_SETUP.md)** - Development environment configuration
-- **[BUILD_CHECK](guides/en/BUILD_CHECK.md)** - Build environment verification
-- **[BUILD_ENVIRONMENT_SUMMARY](guides/en/BUILD_ENVIRONMENT_SUMMARY.md)** - Build environment summary
+- **[QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)** - Local development setup
+- **[DEV_SETUP](mcp-server-sdk/docs/guides/en/DEV_SETUP.md)** - Development environment configuration
+- **[BUILD_CHECK](mcp-server-sdk/docs/guides/en/BUILD_CHECK.md)** - Build environment verification
+- **[BUILD_ENVIRONMENT_SUMMARY](mcp-server-sdk/docs/guides/en/BUILD_ENVIRONMENT_SUMMARY.md)** - Build environment summary
 
 ---
 
 ## 📚 한글 문서 {#한글-문서}
 
 ### 핵심 문서
-- **[README](ko/README.md)** - 완전한 참고 가이드 (1000+ 줄)
-- **[INDEX](ko/INDEX.md)** - 완전한 인덱스 및 네비게이션 가이드
-- **[PROJECT_SUMMARY](ko/PROJECT_SUMMARY.md)** - 생성된 내용 개요
-- **[ARCHITECTURE](ko/ARCHITECTURE.md)** - 시스템 설계 심화
-- **[DELIVERY_CHECKLIST](ko/DELIVERY_CHECKLIST.md)** - 모든 기능 검증
+- **[README](mcp-server-sdk/docs/ko/README.md)** - 완전한 참고 가이드 (1000+ 줄)
+- **[INDEX](mcp-server-sdk/docs/ko/INDEX.md)** - 완전한 인덱스 및 네비게이션 가이드
+- **[PROJECT_SUMMARY](mcp-server-sdk/docs/ko/PROJECT_SUMMARY.md)** - 생성된 내용 개요
+- **[ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md)** - 시스템 설계 심화
+- **[DELIVERY_CHECKLIST](mcp-server-sdk/docs/ko/DELIVERY_CHECKLIST.md)** - 모든 기능 검증
+- **[FEATURES](mcp-server-sdk/FEATURES.md)** - 완전한 기능 문서
 
 ### 가이드
-- **[QUICKSTART](guides/ko/QUICKSTART.md)** - 로컬 개발 환경 설정
-- **[DEV_SETUP](guides/ko/DEV_SETUP.md)** - 개발 환경 설정
-- **[BUILD_CHECK](guides/ko/BUILD_CHECK.md)** - 빌드 환경 확인
-- **[BUILD_ENVIRONMENT_SUMMARY](guides/ko/BUILD_ENVIRONMENT_SUMMARY.md)** - 빌드 환경 요약
+- **[QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md)** - 로컬 개발 환경 설정
+- **[DEV_SETUP](mcp-server-sdk/docs/guides/ko/DEV_SETUP.md)** - 개발 환경 설정
+- **[BUILD_CHECK](mcp-server-sdk/docs/guides/ko/BUILD_CHECK.md)** - 빌드 환경 확인
+- **[BUILD_ENVIRONMENT_SUMMARY](mcp-server-sdk/docs/guides/ko/BUILD_ENVIRONMENT_SUMMARY.md)** - 빌드 환경 요약
 
 ## 🎯 Quick Navigation
 
 ### For Architects
-1. Start with [PROJECT_SUMMARY](en/PROJECT_SUMMARY.md)
-2. Read [ARCHITECTURE](en/ARCHITECTURE.md) for deep dive
-3. Review [README](en/README.md) for complete reference
+1. Start with [PROJECT_SUMMARY](mcp-server-sdk/docs/en/PROJECT_SUMMARY.md)
+2. Read [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for deep dive
+3. Review [README](mcp-server-sdk/docs/en/README.md) for complete reference
 
 ### For Developers
-1. Start with [QUICKSTART](guides/en/QUICKSTART.md)
+1. Start with [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)
 2. Review sample-spoke-app for examples
-3. Read [README](en/README.md) for API reference
-4. Check [ARCHITECTURE](en/ARCHITECTURE.md) for details
+3. Read [README](mcp-server-sdk/docs/en/README.md) for API reference
+4. Check [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for details
 
 ### For DevOps
-1. Read [QUICKSTART](guides/en/QUICKSTART.md) for local setup
+1. Read [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md) for local setup
 2. Review application-prod.yml for production config
-3. Check [README](en/README.md) for deployment section
-4. Review [ARCHITECTURE](en/ARCHITECTURE.md) for topology
+3. Check [README](mcp-server-sdk/docs/en/README.md) for deployment section
+4. Review [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) for topology
 
 ### For Security
-1. Read [README](en/README.md) Security Model section
-2. Review [ARCHITECTURE](en/ARCHITECTURE.md) Security Layers section
-3. Check [QUICKSTART](guides/en/QUICKSTART.md) for testing authorization
+1. Read [README](mcp-server-sdk/docs/en/README.md) Security Model section
+2. Review [ARCHITECTURE](mcp-server-sdk/docs/en/ARCHITECTURE.md) Security Layers section
+3. Check [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md) for testing authorization
 
 ## 📖 Reading Guide
 
 ### 아키텍트용
-1. [PROJECT_SUMMARY](ko/PROJECT_SUMMARY.md)부터 시작
-2. [ARCHITECTURE](ko/ARCHITECTURE.md) 읽기
-3. [README](ko/README.md) 참고
+1. [PROJECT_SUMMARY](mcp-server-sdk/docs/ko/PROJECT_SUMMARY.md)부터 시작
+2. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 읽기
+3. [README](mcp-server-sdk/docs/ko/README.md) 참고
 
 ### 개발자용
-1. [QUICKSTART](guides/ko/QUICKSTART.md)부터 시작
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md)부터 시작
 2. sample-spoke-app 예제 검토
-3. [README](ko/README.md) API 참고
-4. [ARCHITECTURE](ko/ARCHITECTURE.md) 상세 확인
+3. [README](mcp-server-sdk/docs/ko/README.md) API 참고
+4. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 상세 확인
 
 ### DevOps용
-1. [QUICKSTART](guides/ko/QUICKSTART.md) 로컬 설정
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 로컬 설정
 2. application-prod.yml 프로덕션 설정 검토
-3. [README](ko/README.md) 배포 섹션
-4. [ARCHITECTURE](ko/ARCHITECTURE.md) 토폴로지 검토
+3. [README](mcp-server-sdk/docs/ko/README.md) 배포 섹션
+4. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 토폴로지 검토
 
 ### 보안 담당자용
-1. [README](ko/README.md) 보안 모델 섹션
-2. [ARCHITECTURE](ko/ARCHITECTURE.md) 보안 레이어 섹션
-3. [QUICKSTART](guides/ko/QUICKSTART.md) 권한 테스트
+1. [README](mcp-server-sdk/docs/ko/README.md) 보안 모델 섹션
+2. [ARCHITECTURE](mcp-server-sdk/docs/ko/ARCHITECTURE.md) 보안 레이어 섹션
+3. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 권한 테스트
 
 ## 📋 Documentation Structure
 
@@ -211,13 +213,13 @@ docs/
 ## 🚀 Getting Started
 
 ### English
-1. Read [QUICKSTART](guides/en/QUICKSTART.md)
+1. Read [QUICKSTART](mcp-server-sdk/docs/guides/en/QUICKSTART.md)
 2. Follow the setup steps
 3. Test the API
 4. Implement your tools
 
 ### Korean
-1. [QUICKSTART](guides/ko/QUICKSTART.md) 읽기
+1. [QUICKSTART](mcp-server-sdk/docs/guides/ko/QUICKSTART.md) 읽기
 2. 설정 단계 따라하기
 3. API 테스트
 4. 도구 구현
